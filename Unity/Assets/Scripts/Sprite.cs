@@ -18,7 +18,7 @@ public class Sprite : MonoBehaviour {
 	}
 	public void Update(){
 		foreach(CollisionBox cb in curFrame.hitBoxes){
-			collisionManager.Add(transform, cb);
+			collisionManager.Add(this, cb);
 		}	
 	}
 	public void Play(string anim){

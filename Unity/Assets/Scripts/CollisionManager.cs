@@ -6,7 +6,7 @@ using System.Linq;
 public class CollisionManager : MonoBehaviour {
 	public List<CollisionBoxInfo> activeCollisionBoxes = new List<CollisionBoxInfo>();
 	
-	public void Add(Transform owner, CollisionBox box){
+	public void Add(Sprite owner, CollisionBox box){
 		activeCollisionBoxes.Add(new CollisionBoxInfo{owner = owner, box = box});
 	}
 	
@@ -28,7 +28,6 @@ public class CollisionManager : MonoBehaviour {
 				}
 			);
 		}
-		activeCollisionBoxes.Clear();
 	}
 	
 	public static bool Overlapping(CollisionBoxInfo a, CollisionBoxInfo b){
@@ -37,15 +36,53 @@ public class CollisionManager : MonoBehaviour {
 		}
 		return false;
 	}
+	
+	public void OnDrawGizmos(){
+		foreach(CollisionBoxInfo cbi in activeCollisionBoxes){
+			if(cbi.box.passCollision){
+				Gizmos.color = Color.red;	
+			}
+			Gizmos.DrawWireCube((Vector3)cbi.rect.center, new Vector3(cbi.rect.width,cbi.rect.height, 0.1f));
+			Gizmos.color = Color.white;
+		}
+		activeCollisionBoxes.Clear();
+	}
 }
 
 public class CollisionBoxInfo{
-	public Transform owner;
+	public Sprite owner;
 	public CollisionBox box;
+	
+	public Rect rect {
+		get{
+			return new Rect(xMin,yMin, xMax - xMin, yMax - yMin);				
+		}
+	}
+				
+	public float xMin{
+		get {
+			return box.rect.xMin/64f + owner.transform.position.x - 0.5f;	
+		}
+	}
+	public float xMax{
+		get {
+			return box.rect.xMax/64f + owner.transform.position.x- 0.5f;	
+		}
+	}
+	public float yMin{
+		get {
+			return -box.rect.yMax/64f + owner.transform.position.y + 1- owner.spriteRenderer.transform.localPosition.y;	
+		}
+	}
+	public float yMax{
+		get {
+			return -box.rect.yMin/64f + owner.transform.position.y + 1- owner.spriteRenderer.transform.localPosition.y;	
+		}
+	}
 }
 
 public class CollisionInstance{
-	public Transform sender;
+	public Sprite sender;
 	public string action;
 }
 
