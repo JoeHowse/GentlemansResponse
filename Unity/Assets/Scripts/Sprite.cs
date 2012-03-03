@@ -4,16 +4,23 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class Sprite : MonoBehaviour {
-	public int curFrame;
+	public Frame curFrame;
 	public string lastPlayedAnim;
 	public List<FrameAnimation> frameAnimations;
 	public Renderer spriteRenderer;
-	
+	public CollisionManager collisionManager;
 	private bool playing;
 	public bool IsPlaying{
 		get { return playing; }	
 	}
-	
+	public void Start(){
+		Play("idle");	
+	}
+	public void Update(){
+		foreach(CollisionBox cb in curFrame.hitBoxes){
+			collisionManager.Add(transform, cb);
+		}	
+	}
 	public void Play(string anim){
 		if(playing){
 			if(lastPlayedAnim == anim)
@@ -38,6 +45,7 @@ public class Sprite : MonoBehaviour {
 			m.mainTextureScale = new Vector2(frame.texCoords.width / frameAnimation.texture.width,
 											frame.texCoords.height / frameAnimation.texture.height);
 			spriteRenderer.material = m;
+			curFrame = frame;
 			yield return new WaitForSeconds(timePerFrame);
 		}
 		playing = false;
@@ -45,7 +53,9 @@ public class Sprite : MonoBehaviour {
 	}
 	
 	public void Stop(){
-		if(playing)
+		if(playing){
 			StopAllCoroutines();
+			lastPlayedAnim = "";
+		}
 	}
 }

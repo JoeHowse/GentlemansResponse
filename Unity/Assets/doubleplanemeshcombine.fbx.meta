@@ -1,8 +1,10 @@
 fileFormatVersion: 2
-guid: 67323dbf0b76f4b0c93834f5462311b4
+guid: 32ceabc64d5074362b7814d5852e6782
 ModelImporter:
   fileIDToRecycleName:
-    4300000: pPlane1
+    4300000: transform2
+    4300002: transform1
+    4300004: polySurface1
   serializedVersion: 10
   materials:
     importMaterials: 1
@@ -40,6 +42,56 @@ ModelImporter:
     //RootNode:
       data:
         first: 1
+        second: a8860100
+      data:
+        first: 4
+        second: 881a0600
+      data:
+        first: 111
+        second: 605fa900
+    pPlane1:
+      data:
+        first: 1
+        second: aa860100
+      data:
+        first: 4
+        second: 8a1a0600
+    pPlane2:
+      data:
+        first: 1
+        second: a4860100
+      data:
+        first: 4
+        second: 841a0600
+    polySurface1:
+      data:
+        first: 1
+        second: a6860100
+      data:
+        first: 4
+        second: 861a0600
+      data:
+        first: 23
+        second: 64182300
+      data:
+        first: 33
+        second: a45a3200
+    transform1:
+      data:
+        first: 1
+        second: a2860100
+      data:
+        first: 4
+        second: 821a0600
+      data:
+        first: 23
+        second: 62182300
+      data:
+        first: 33
+        second: a25a3200
+    transform2:
+      data:
+        first: 1
         second: a0860100
       data:
         first: 4
@@ -50,6 +102,3 @@ ModelImporter:
       data:
         first: 33
         second: a05a3200
-      data:
-        first: 111
-        second: 605fa900
