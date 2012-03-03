@@ -5,6 +5,9 @@ using System.Collections.Generic;
 public class EnemyController : MonoBehaviour {
 	public static uint maxNumFighting = 2;
 	
+	static uint numInstances = 0;
+	public static uint NumInstances { get { return numInstances; } }
+	
 	static uint numFighting = 0;
 	
 	public Transform player;
@@ -15,6 +18,10 @@ public class EnemyController : MonoBehaviour {
 	public bool circleClockwise = false;
 	
 	bool fighting = false;
+	
+	void Awake() {
+		numInstances++;
+	}
 	
 	void Update() {
 		if(!fighting && numFighting < maxNumFighting) {
@@ -63,6 +70,8 @@ public class EnemyController : MonoBehaviour {
 			// Release a fighting token.
 			numFighting--;
 		}
+		
+		numInstances--;
 	}
 	
 	bool AttemptMove(Vector3 destination) {
