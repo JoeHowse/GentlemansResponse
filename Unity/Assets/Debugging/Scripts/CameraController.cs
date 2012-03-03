@@ -16,8 +16,6 @@ public class CameraController : MonoBehaviour
 	public float distance = 15.0F;
 	public float springiness = 4.0F;
 
-	private bool targetLock = false;
-
 // This is for setting interpolation on our target, but making sure we don't permanently
 // alter the target's interpolation setting.  This is used in the SetTarget () function.
 	private RigidbodyInterpolation savedInterpolationSetting = RigidbodyInterpolation.None;
@@ -73,38 +71,37 @@ public class CameraController : MonoBehaviour
 		// the following defaults.
 		float heightOffset = 0.0F;
 		float distanceModifier = 1.0F;
-		float velocityLookAhead = 0.0;
-		Vector2 maxLookAhead = Vector2 (0.0, 0.0);
+		float velocityLookAhead = 0.0F;
+		Vector2 maxLookAhead = new Vector2 (0.0F, 0.0F);
 	
 		// Look for CameraTargetAttributes in our target.
-		var cameraTargetAttributes = target.GetComponent(CameraTargetAttributes);
-	
 		// If our target has special attributes, use these instead of our above defaults.
-		if (cameraTargetAttributes) {
-			heightOffset = cameraTargetAttributes.heightOffset;
-			distanceModifier = cameraTargetAttributes.distanceModifier;
-			velocityLookAhead = cameraTargetAttributes.velocityLookAhead;
-			maxLookAhead = cameraTargetAttributes.maxLookAhead;
-		}
+//		if ((target.GetComponent("CameraTargetAttributes")) != null) {
+//			heightOffset = target.GetComponent("CameraTargetAttributes").heightOffset;
+//			distanceModifier = target.GetComponent("CameraTargetAttributes").distanceModifier;
+//			velocityLookAhead = target.GetComponent("CameraTargetAttributes").velocityLookAhead;
+//			maxLookAhead = target.GetComponent("CameraTargetAttributes").maxLookAhead;
+//		}
 	
 		// First do a rough goalPosition that simply follows the target at a certain relative height and distance.
-		Vector3 goalPosition = target.position + Vector3 (0, heightOffset, -distance * distanceModifier);
+		Vector3 goalPosition = new Vector3 (0, heightOffset, -distance * distanceModifier);
+		goalPosition += target.transform.position;
 	
 		// Determine velocity of the target
 		Vector3 targetVelocity = Vector3.zero;
-		if (target.GetComponent (Rigidbody)) {
-			targetVelocity = target.GetComponent(Rigidbody).velocity;
+		if (target.rigidbody) {
+			targetVelocity = target.rigidbody.velocity;
 		}
-		else if (target.GetComponent (PlatformerController)) {
-			targetVelocity = target.GetComponent(PlatformerController).GetVelocity ();
-		}
+//		else if (target.GetComponent (PlatformerController)) {
+//			targetVelocity = target.GetComponent(PlatformerController).GetVelocity ();
+//		}
 	
 		// Determine where it is belived the target will be
 		// Modify the value so that the character doesn't move offscreen 
 		Vector3 lookAhead = targetVelocity * velocityLookAhead;
 		lookAhead.x = Mathf.Clamp (lookAhead.x, -maxLookAhead.x, maxLookAhead.x);
 		lookAhead.y = Mathf.Clamp (lookAhead.y, -maxLookAhead.y, maxLookAhead.y);
-		lookAhead.z = 0.0;
+		lookAhead.z = 0.0F;
 	
 		// adjust the goal position with the new look ahead value
 		goalPosition += lookAhead;
@@ -117,21 +114,19 @@ public class CameraController : MonoBehaviour
 		transform.position = goalPosition;
 	
 		// Get the target position in viewport space.  Viewport space is relative to the camera.
-		Vector3 targetViewportPosition = camera.WorldToViewportPoint (target.position);
+//		Vector3 targetViewportPosition = camera.WorldToViewportPoint (target.transform.position);
 	
 		// Clamp top and right
-		Vector3 upperRightCameraInWorld = camera.ViewportToWorldPoint (Vector3 (1.0, 1.0, targetViewportPosition.z));
-		clampOffset.x = Mathf.Min (levelBounds.xMax - upperRightCameraInWorld.x, 0.0);
-		clampOffset.y = Mathf.Min ((levelBounds.yMax - upperRightCameraInWorld.y), 0.0);
+//		Vector3 upperRightCameraInWorld = camera.ViewportToWorldPoint (new Vector3 (1.0F, 1.0F, targetViewportPosition.z));
+//		clampOffset.x = Mathf.Min (levelBounds.xMax - upperRightCameraInWorld.x, 0.0);
+//		clampOffset.y = Mathf.Min ((levelBounds.yMax - upperRightCameraInWorld.y), 0.0);
 		goalPosition += clampOffset;
 	
 		// Clamp bottom and left
 		transform.position = goalPosition;
-		Vector3 lowerLeftCameraInWorld = camera.ViewportToWorldPoint (Vector3 (0.0, 0.0, targetViewportPosition.z));
-	
-		// Find out how far outside the world the camera is right now.
-		clampOffset.x = Mathf.Max ((levelBounds.xMin - lowerLeftCameraInWorld.x), 0.0);
-		clampOffset.y = Mathf.Max ((levelBounds.yMin - lowerLeftCameraInWorld.y), 0.0);
+//		Vector3 lowerLeftCameraInWorld = camera.ViewportToWorldPoint (new Vector3 (0.0F, 0.0F, targetViewportPosition.z));
+//		clampOffset.x = Mathf.Max ((levelBounds.xMin - lowerLeftCameraInWorld.x), 0.0);
+//		clampOffset.y = Mathf.Max ((levelBounds.yMin - lowerLeftCameraInWorld.y), 0.0);
 		goalPosition += clampOffset;
 	
 		// reset camera to original position
