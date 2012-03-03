@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
+[System.Serializable]
 public class CollisionBox{
 	public Rect rect;
 	public bool receiveCollision;
