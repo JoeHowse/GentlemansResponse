@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour {
 	public CollisionManager collisionManager;
 	public GroundController groundController;
 	public PlayerController playerController;
+	public Proclaimer proclaimer;
 	
 	void Awake() {
 		instance = this;
