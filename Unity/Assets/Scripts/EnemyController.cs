@@ -3,15 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class EnemyController : MonoBehaviour {
-	public static uint maxNumFighting = 2;
+	public static uint maxNumFighting = 3;
 	
 	static uint numInstances = 0;
 	public static uint NumInstances { get { return numInstances; } }
 	
 	static uint numFighting = 0;
 	
-	public Transform player;
-	public Ground ground;
 	public float strikingDistance = 0.1f;
 	public float circlingDistance = 1.5f;
 	public float movementSpeed = 0.1f;
@@ -30,6 +28,7 @@ public class EnemyController : MonoBehaviour {
 			numFighting++;
 		}
 		
+		Transform player = GameManager.Instance.playerController.transform;
 		Vector3 vectorToOpponent = player.position - transform.position;
 		float distanceToOpponent = vectorToOpponent.magnitude;
 		if(fighting) {
@@ -42,13 +41,13 @@ public class EnemyController : MonoBehaviour {
 			}
 		} else {
 			// Attempt to circle the opponent.
-			float theta = Mathf.Atan2(vectorToOpponent.z, vectorToOpponent.x);
+			float theta = Mathf.Atan2(vectorToOpponent.y, vectorToOpponent.x);
 			float deltaTheta = movementSpeed / circlingDistance;
 			if(circleClockwise) {
 				deltaTheta *= -1;
 			}
 			theta += deltaTheta;
-			if(!AttemptMove(player.position + circlingDistance * new Vector3(Mathf.Cos(theta), 0f, Mathf.Sin(theta)))) {
+			if(!AttemptMove(player.position + circlingDistance * new Vector3(Mathf.Cos(theta), Mathf.Sin(theta), 0f))) {
 				// An obstacle lies in the way of the current circling direction.
 				// Reverse the circling direction.
 				circleClockwise = !circleClockwise;
@@ -75,10 +74,11 @@ public class EnemyController : MonoBehaviour {
 	}
 	
 	bool AttemptMove(Vector3 destination) {
+		GroundController groundController = GameManager.Instance.groundController;
 		float movementDistance = Time.deltaTime * movementSpeed;
 		Vector3 vectorToDestination = destination - transform.position;
 		if(vectorToDestination.magnitude <= movementSpeed) {
-			if(ground.IsOverGround(destination)) {
+			if(groundController.IsOverGround(destination)) {
 				// Move directly to the destination.
 				transform.position = destination;
 				// Report success.
@@ -90,13 +90,13 @@ public class EnemyController : MonoBehaviour {
 		}
 		// Attempt a waypoint on the direct route.
 		Vector3 waypoint = transform.position + movementSpeed * vectorToDestination;
-		if(!ground.IsOverGround(waypoint)) {
+		if(!groundController.IsOverGround(waypoint)) {
 			// Attempt a waypoint that closes the x distance.
 			waypoint = transform.position + movementDistance * new Vector3(vectorToDestination.x, 0f, 0f);
-			if(!ground.IsOverGround(waypoint)) {
-				// Attempt a waypoint that closes the z distance.
-				waypoint = transform.position + movementDistance * new Vector3(0f, 0f, vectorToDestination.z);
-				if(!ground.IsOverGround(waypoint)) {
+			if(!groundController.IsOverGround(waypoint)) {
+				// Attempt a waypoint that closes the y distance.
+				waypoint = transform.position + movementDistance * new Vector3(0f, vectorToDestination.y, 0f);
+				if(!groundController.IsOverGround(waypoint)) {
 					// No suitable waypoint was found.
 					// Report failure.
 					return false;

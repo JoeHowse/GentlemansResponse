@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class CameraController : MonoBehaviour {
-	public Transform player;
 	public float xWhereCameraStartsPanning;
 	public List<Transform> stickingPoints;
 	
@@ -11,6 +10,7 @@ public class CameraController : MonoBehaviour {
 	bool stuck;
 	
 	void Start() {
+		Transform player = GameManager.Instance.playerController.transform;
 		playerLastX = player.position.x;
 	}
 	
@@ -24,6 +24,8 @@ public class CameraController : MonoBehaviour {
 				stickingPoints = stickingPoints.FindAll(IsFutureStickingPoint);
 			}
 		}
+		
+		Transform player = GameManager.Instance.playerController.transform;
 		
 		if(player.position.x - transform.position.x >= xWhereCameraStartsPanning) {
 			// The player is in the camera's right-hand panning margin.

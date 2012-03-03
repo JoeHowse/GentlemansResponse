@@ -2,8 +2,6 @@ using UnityEngine;
 using System.Collections;
 
 public class StayOverGround : MonoBehaviour {
-	public Ground ground;
-	
 	Vector3 lastPosition;
 	
 	void Start () {
@@ -11,7 +9,8 @@ public class StayOverGround : MonoBehaviour {
 	}
 	
 	void LateUpdate () {
-		if(ground && !ground.IsOverGround(transform.position)) {
+		GroundController groundController = GameManager.Instance.groundController;
+		if(groundController && !groundController.IsOverGround(transform.position)) {
 			transform.position = lastPosition;
 		} else {
 			lastPosition = transform.position;
