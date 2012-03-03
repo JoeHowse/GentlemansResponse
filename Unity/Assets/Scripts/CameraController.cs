@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class CameraController : MonoBehaviour {
-	public float xWhereCameraStartsPanning;
-	public List<Transform> stickingPoints;
+	public float xDistancePanning;
+	public float xDistanceSpawning;
 	
 	float playerLastX;
 	bool stuck;
@@ -20,31 +20,33 @@ public class CameraController : MonoBehaviour {
 				return;
 			} else {
 				// All the enemies here are dead.
-				// Remove the current sticking points.
-				stickingPoints = stickingPoints.FindAll(IsFutureStickingPoint);
+				stuck = false;
 			}
 		}
 		
 		Transform player = GameManager.Instance.playerController.transform;
 		
-		if(player.position.x - transform.position.x >= xWhereCameraStartsPanning) {
+		if(player.position.x - transform.position.x >= xDistancePanning) {
 			// The player is in the camera's right-hand panning margin.
 			// Pan the camera in step with the player.
 			transform.position += new Vector3(player.position.x - playerLastX, 0f, 0f);
 		}
 		
-		foreach(Transform stickingPoint in stickingPoints) {
-			if(stickingPoint.position.x - transform.position.x <= 0f) {
+		foreach(StickingPointController stickingPointController in StickingPointController.Instances) {
+			if(stickingPointController.transform.position.x - transform.position.x <= 0f) {
 				// The camera has panned to a sticking point.
 				stuck = true;
-				break;
+				Destroy(stickingPointController.gameObject);
+			}
+		}
+		
+		foreach(SpawningPointController spawningPointController in SpawningPointController.Instances) {
+			if(spawningPointController.transform.position.x - transform.position.x <= xDistanceSpawning) {
+				spawningPointController.Spawn();
+				Destroy(spawningPointController);
 			}
 		}
 		
 		playerLastX = player.position.x;
-	}
-	
-	bool IsFutureStickingPoint(Transform stickingPoint) {
-		return stickingPoint.position.x - transform.position.x > 0f;
 	}
 }
