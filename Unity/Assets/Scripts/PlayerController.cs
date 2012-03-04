@@ -148,6 +148,9 @@ public class PlayerController : MonoBehaviour {
 		StartCoroutine(NoControl(10));
 		sprite.Play("fall");
 		StartCoroutine(KnockBack(3f, 1f));
+		
+		// add sound effect
+		audioManager.playSFX("explode");
 		yield return new WaitForSeconds(0.5f);
 		transform.position -= Vector3.up * 0.2f;
 		yield return new WaitForSeconds(5f);
@@ -165,6 +168,8 @@ public class PlayerController : MonoBehaviour {
 		if(ci.action == "attack"){
 			bool dead = GetComponent<Health>().TakeDamage(1);
 			if(!dead){
+			// add sound effect
+			audioManager.playSFX("hit");
 				StartCoroutine(NoControl(0.5f));
 				StartCoroutine(KnockBack(0.3f));
 				sprite.Play("stun");
