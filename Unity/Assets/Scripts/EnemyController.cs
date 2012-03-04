@@ -17,6 +17,9 @@ public class EnemyController : MonoBehaviour {
 	public Sprite sprite;
 	public GameObject gibs;
 	public EnemyState currentState = EnemyState.Idling;
+	
+	public AudioManager audioManager;
+	
 	bool allowedFight = true;
 	bool noControl = false;
 	
@@ -191,6 +194,10 @@ public class EnemyController : MonoBehaviour {
 	IEnumerator KnockDownAndDie(){
 		yield return StartCoroutine(KnockDown());
 		yield return new WaitForSeconds(1f);
+			
+			// add sound effect
+			audioManager.playSFX("explode");
+			
 		Instantiate(gibs,transform.position,Quaternion.identity);
 		Destroy(gameObject);
 	}
@@ -201,6 +208,10 @@ public class EnemyController : MonoBehaviour {
 		numFighting--;
 		yield return new WaitForSeconds(0.2f);
 		sprite.Play("attack");
+			
+			// add sound effect
+			audioManager.playSFX("attack");
+			
 		StartCoroutine(NoControl(1f));
 		yield return new WaitForSeconds(1f);
 		allowedFight = true;
@@ -217,6 +228,10 @@ public class EnemyController : MonoBehaviour {
 		if(ci.action == "jab"){
 			GameManager.Instance.enemyHealthBar.target = GetComponent<Health>();
 			Cancel();
+			
+			// add sound effect
+			audioManager.playSFX("hit");
+			
 			StartCoroutine(NoControl(0.3f));
 			StartCoroutine(KnockBack(-0.02f));
 			sprite.Play("stun");
@@ -225,6 +240,10 @@ public class EnemyController : MonoBehaviour {
 		if(ci.action == "hook"){
 			GameManager.Instance.enemyHealthBar.target = GetComponent<Health>();
 			Cancel();
+			
+			// add sound effect
+			audioManager.playSFX("hit");
+			
 			StartCoroutine(NoControl(1f));
 			StartCoroutine(KnockBack(0.5f));
 			sprite.Play("stun");
@@ -233,6 +252,10 @@ public class EnemyController : MonoBehaviour {
 		if(ci.action == "cane"){
 			GameManager.Instance.enemyHealthBar.target = GetComponent<Health>();
 			Cancel();
+			
+			// add sound effect
+			audioManager.playSFX("hit");
+			
 			StartCoroutine(KnockDown());
 			dead = GetComponent<Health>().TakeDamage(3);
 		}

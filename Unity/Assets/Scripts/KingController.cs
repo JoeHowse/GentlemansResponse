@@ -22,6 +22,7 @@ public class KingController : MonoBehaviour {
 	public string entranceText;
 	public Transform walkTarget;
 	public GUITexture screenFlash;
+	public AudioManager audioManager;
 	
 	void Awake() {
 		numInstances++;
@@ -246,6 +247,9 @@ public class KingController : MonoBehaviour {
 		yield return new WaitForSeconds(0.2f);
 		sprite.Play("attack");
 		StartCoroutine(NoControl(1f));
+			
+			// add sound effect
+			audioManager.playSFX("attack");
 		yield return new WaitForSeconds(1f);
 		allowedFight = true;
 	}
@@ -262,6 +266,9 @@ public class KingController : MonoBehaviour {
 		if(ci.action == "jab"){
 			GameManager.Instance.enemyHealthBar.target = GetComponent<Health>();
 			Cancel();
+			
+			// add sound effect
+			audioManager.playSFX("hit");
 			StartCoroutine(NoControl(0.2f));
 			StartCoroutine(KnockBack(-0.02f));
 			sprite.Play("stun");
@@ -270,6 +277,9 @@ public class KingController : MonoBehaviour {
 		if(ci.action == "hook"){
 			GameManager.Instance.enemyHealthBar.target = GetComponent<Health>();
 			Cancel();
+			
+			// add sound effect
+			audioManager.playSFX("hit");
 			StartCoroutine(NoControl(0.2f));
 			StartCoroutine(KnockBack(0.5f));
 			sprite.Play("stun");
@@ -278,6 +288,9 @@ public class KingController : MonoBehaviour {
 		if(ci.action == "cane"){
 			GameManager.Instance.enemyHealthBar.target = GetComponent<Health>();
 			Cancel();
+			
+			// add sound effect
+			audioManager.playSFX("hit");
 			StartCoroutine(NoControl(0.2f));
 			StartCoroutine(KnockBack(1.5f));
 			dead = GetComponent<Health>().TakeDamage(3);
