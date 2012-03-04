@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class CameraController : MonoBehaviour {
-	public float xDistancePanning;
-	public float xDistanceSpawning;
+	public float xDistancePanning = 0f;
+	public float xDistanceSticking = 1.5f;
+	public float xDistanceSpawning = 2.3f;
 	
 	float playerLastX;
 	bool stuck;
@@ -15,8 +16,21 @@ public class CameraController : MonoBehaviour {
 	}
 	
 	void LateUpdate() {
+		Transform player = GameManager.Instance.playerController.transform;
+		
+		if(transform.position.x - player.transform.position.x >= xDistanceSticking) {
+			// The player is in the camera's left-hand sticking margin.
+			// Force the player back in bounds.
+			player.transform.position = new Vector3(transform.position.x - xDistanceSticking, player.transform.position.y, player.transform.position.z);
+		}
+		
 		if(stuck) {
 			if(EnemyController.NumInstances > 0) {
+				if(player.transform.position.x - transform.position.x >= xDistanceSticking) {
+					// The player is in the camera's right-hand sticking margin.
+					// Force the player back in bounds.
+					player.transform.position = new Vector3(transform.position.x + xDistanceSticking, player.transform.position.y, player.transform.position.z);
+				}
 				return;
 			} else {
 				// All the enemies here are dead.
@@ -27,8 +41,6 @@ public class CameraController : MonoBehaviour {
 				}
 			}
 		}
-		
-		Transform player = GameManager.Instance.playerController.transform;
 		
 		if(player.position.x - transform.position.x >= xDistancePanning) {
 			// The player is in the camera's right-hand panning margin.
