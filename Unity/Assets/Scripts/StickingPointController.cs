@@ -6,6 +6,7 @@ public class StickingPointController : MonoBehaviour {
 	static List<StickingPointController> instances = new List<StickingPointController>();
 	public static List<StickingPointController> Instances { get { return instances; } }
 	
+	public string proclimation;
 	void Awake() {
 		instances.Add(this);
 	}

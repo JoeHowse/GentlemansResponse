@@ -11,6 +11,5 @@ public class Proclaimer : MonoBehaviour {
 				guiText.text = text;
 			}
 		}
-		Destroy(proclamation.gameObject, duration);
 	}
 }

@@ -8,7 +8,7 @@ public class CameraController : MonoBehaviour {
 	
 	float playerLastX;
 	bool stuck;
-	
+	string unstuckMessage;
 	void Start() {
 		Transform player = GameManager.Instance.playerController.transform;
 		playerLastX = player.position.x;
@@ -21,6 +21,10 @@ public class CameraController : MonoBehaviour {
 			} else {
 				// All the enemies here are dead.
 				stuck = false;
+				if(unstuckMessage != ""){
+					GameManager.Instance.proclaimer.Proclaim(unstuckMessage, 3f);
+					unstuckMessage = "";
+				}
 			}
 		}
 		
@@ -40,6 +44,7 @@ public class CameraController : MonoBehaviour {
 			if(stickingPointController.transform.position.x - transform.position.x <= 0f) {
 				// The camera has panned to a sticking point.
 				stuck = true;
+				unstuckMessage = stickingPointController.proclimation;
 				Destroy(stickingPointController.gameObject);
 			}
 		}

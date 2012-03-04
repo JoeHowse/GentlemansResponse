@@ -16,56 +16,44 @@ public class EnemyController : MonoBehaviour {
 	public bool circleClockwise = false;
 	public Sprite sprite;
 	public GameObject gibs;
-	bool fighting = false;
+	public EnemyState currentState = EnemyState.Idling;
 	bool allowedFight = true;
 	bool noControl = false;
 	
 	void Awake() {
 		numInstances++;
 		sprite = GetComponent<Sprite>();
+		circlingDistance += Random.Range(-0.4f, 0.4f);
 	}
 	
-	void Update() {
-		if(!fighting && numFighting < maxNumFighting && allowedFight) {
-			// Acquire a fighting token.
-			fighting = true;
-			numFighting++;
-		}
+	void Update() {		
 		if(noControl){
 			return;	
 		}
-		Transform player = GameManager.Instance.playerController.transform;
-		Vector3 vectorToOpponent = (player.position - transform.position);
-	
-		float distanceToOpponent = vectorToOpponent.magnitude;
-		if(fighting) {
-			if(distanceToOpponent <= strikingDistance) {
-				// Attempt to strike the opponent.
-				
-				StartCoroutine(AttackThenBackOff());
-			} else {
-				// Attempt to approach the opponent.
-				sprite.Play("walk");
-				AttemptMove(player.position);
-			}
-		} else {
-			// Attempt to circle the opponent.
-			float theta = Mathf.Atan2(-vectorToOpponent.y, -vectorToOpponent.x);
-			float deltaTheta = movementSpeed*Time.deltaTime;
-			if(circleClockwise) {
-				deltaTheta *= -1;
-			}
-			theta += deltaTheta;
-			Vector3 angleVec = new Vector3(Mathf.Cos(theta), Mathf.Sin(theta), 0f);
-//			Debug.Log(angleVec);
-			sprite.Play("walk");
-			if(!AttemptMove(player.position + circlingDistance *  angleVec)) {
-				// An obstacle lies in the way of the current circling direction.
-				// Reverse the circling direction.
-				circleClockwise = !circleClockwise;
-			}
+		if(currentState != EnemyState.Fighting 
+			&& numFighting < maxNumFighting 
+			&& allowedFight) {
+			// Acquire a fighting token.
+			currentState = EnemyState.Fighting;
+			numFighting++;
+		}
+		else{
+			Debug.Log(numFighting);	
+		}
+		switch(currentState){
+			case EnemyState.Fighting:
+				Fighting();
+				break;
+			case EnemyState.Circling:
+				Circling();
+				break;
+			case EnemyState.Idling:
+				Idle();
+				break;
 		}
 		
+		Transform player = GameManager.Instance.playerController.transform;
+		Vector3 vectorToOpponent = (player.position - transform.position);
 		// Face the opponent.
 		if(vectorToOpponent.x < 0){
 			sprite.SetDirection(false);
@@ -75,9 +63,62 @@ public class EnemyController : MonoBehaviour {
 		}
 		
 	}
+
+	void Fighting (){
+		Transform player = GameManager.Instance.playerController.transform;
+		Vector3 vectorToOpponent = (player.position - transform.position);
+		Vector3 flattened = -vectorToOpponent;
+		flattened.y = 0;
+		flattened.Normalize();
+		Vector3 target = player.position + flattened * strikingDistance;
+		float distance = Vector3.Distance(transform.position, target);
+		if(distance < 0.1f){
+			Attack();	
+		}
+		else{
+			sprite.Play("walk");
+			AttemptMove(target);	
+		}
+	}
+	
+	void Attack(){
+		StartCoroutine(AttackThenBackOff());
+	}
+	
+	
+	float lastStateChange = 0;
+	void Circling (){
+		Transform player = GameManager.Instance.playerController.transform;
+		Vector3 vectorToOpponent = (player.position - transform.position);
+		float theta = Mathf.Atan2(-vectorToOpponent.y, -vectorToOpponent.x);
+		float deltaTheta = movementSpeed*Time.deltaTime;
+		if(circleClockwise) {
+			deltaTheta *= -1;
+		}
+		theta += deltaTheta;
+		Vector3 angleVec = new Vector3(Mathf.Cos(theta), Mathf.Sin(theta), 0f);
+		sprite.Play("walk");
+		if(!AttemptMove(player.position + circlingDistance *  angleVec)) {
+			// An obstacle lies in the way of the current circling direction.
+			// Reverse the circling direction.
+			circleClockwise = !circleClockwise;
+		}
+		if(Time.time - lastStateChange > 2f){
+			currentState = EnemyState.Idling;
+			lastStateChange = Time.time;
+		}
+	}
+	
+	void Idle (){
+		sprite.Play("idle");
+		if(Time.time - lastStateChange > 0.7f){
+			currentState = EnemyState.Circling;
+			lastStateChange = Time.time;
+		}
+	}
 	
 	void OnDestroy() {
-		if(fighting) {
+		if(currentState == EnemyState.Fighting) {
 			// Release a fighting token.
 			numFighting--;
 		}
@@ -156,13 +197,11 @@ public class EnemyController : MonoBehaviour {
 	
 	IEnumerator AttackThenBackOff(){
 		allowedFight = false;
-		yield return new WaitForSeconds(0.3f);
+		currentState = EnemyState.Circling;
+		numFighting--;
+		yield return new WaitForSeconds(0.2f);
 		sprite.Play("attack");
 		StartCoroutine(NoControl(1f));
-		if(fighting) {
-			numFighting--;
-			fighting = false;
-		}
 		yield return new WaitForSeconds(1f);
 		allowedFight = true;
 	}
@@ -170,13 +209,14 @@ public class EnemyController : MonoBehaviour {
 	public void Collision(object c){
 		if(Time.time - lastHit < 0.25f)
 			return;
+		if(GetComponent<Health>().amount <= 0)
+			return;
 		lastHit = Time.time;
 		CollisionInstance ci = c as CollisionInstance;
 		bool dead = false;
 		if(ci.action == "jab"){
 			GameManager.Instance.enemyHealthBar.target = GetComponent<Health>();
-			StopAllCoroutines();
-			allowedFight = true;
+			Cancel();
 			StartCoroutine(NoControl(0.3f));
 			StartCoroutine(KnockBack(-0.02f));
 			sprite.Play("stun");
@@ -184,8 +224,7 @@ public class EnemyController : MonoBehaviour {
 		}
 		if(ci.action == "hook"){
 			GameManager.Instance.enemyHealthBar.target = GetComponent<Health>();
-			StopAllCoroutines();
-			allowedFight = true;
+			Cancel();
 			StartCoroutine(NoControl(1f));
 			StartCoroutine(KnockBack(0.5f));
 			sprite.Play("stun");
@@ -193,16 +232,24 @@ public class EnemyController : MonoBehaviour {
 		}
 		if(ci.action == "cane"){
 			GameManager.Instance.enemyHealthBar.target = GetComponent<Health>();
-			StopAllCoroutines();
-			allowedFight = true;
+			Cancel();
 			StartCoroutine(KnockDown());
 			dead = GetComponent<Health>().TakeDamage(3);
 		}
 		
 		if(dead){
-			StopAllCoroutines();
-			allowedFight = true;
+			Cancel();
 			StartCoroutine(KnockDownAndDie());
 		}
 	}
+	public void Cancel(){
+		StopAllCoroutines();
+		allowedFight = true;
+	}
+}
+
+public enum EnemyState{
+	Idling,
+	Circling,
+	Fighting
 }
