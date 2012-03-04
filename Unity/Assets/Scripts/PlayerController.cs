@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour {
 	public Sprite sprite;
 	bool dashing = false;
 	
+	public AudioManager audioManager;
+	
 	void Start(){
 		sprite = GetComponent<Sprite>();
 		sprite.SetDirection(true);
