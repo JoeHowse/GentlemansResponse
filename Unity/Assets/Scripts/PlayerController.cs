@@ -6,6 +6,8 @@ public class PlayerController : MonoBehaviour {
 	
 	public int comboCount = 0;
 	public bool noControl = false;
+	public int health = 15;
+	public int maxHealth = 15;
 	
 	public float comboTimer = 0;
 	public List<string> comboNames = new List<string>();
