@@ -9,6 +9,7 @@ public class Sprite : MonoBehaviour {
 	public List<FrameAnimation> frameAnimations;
 	public Renderer spriteRenderer;
 	private bool playing, facingRight;
+	public string startFrame = "idle";
 	public bool IsPlaying{
 		get { return playing; }	
 	}
@@ -16,7 +17,7 @@ public class Sprite : MonoBehaviour {
 		get { return facingRight;}	
 	}
 	public void Start(){
-		Play("idle");	
+		Play(startFrame);	
 	}
 	public void Update(){
 		foreach(CollisionBox cb in curFrame.hitBoxes){
