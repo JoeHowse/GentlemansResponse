@@ -44,7 +44,7 @@ public class CameraController : MonoBehaviour {
 			if(stickingPointController.transform.position.x - transform.position.x <= 0f) {
 				// The camera has panned to a sticking point.
 				stuck = true;
-				unstuckMessage = stickingPointController.proclimation;
+				unstuckMessage = stickingPointController.proclamation;
 				Destroy(stickingPointController.gameObject);
 			}
 		}

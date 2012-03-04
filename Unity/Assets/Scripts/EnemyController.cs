@@ -66,7 +66,7 @@ public class EnemyController : MonoBehaviour {
 
 	void Fighting (){
 		Transform player = GameManager.Instance.playerController.transform;
-		Vector3 vectorToOpponent = (player.position - transform.position);
+		Vector3 vectorToOpponent = new Vector3(player.position.x - transform.position.x, player.position.y - transform.position.y, 0f);
 		Vector3 flattened = -vectorToOpponent;
 		flattened.y = 0;
 		flattened.Normalize();
@@ -129,7 +129,7 @@ public class EnemyController : MonoBehaviour {
 	bool AttemptMove(Vector3 destination) {
 		GroundController groundController = GameManager.Instance.groundController;
 		float movementDistance = Time.deltaTime * movementSpeed;
-		Vector3 vectorToDestination = (destination - transform.position);
+		Vector3 vectorToDestination = new Vector3(destination.x - transform.position.x, destination.y - transform.position.y, 0f);
 		if(vectorToDestination.magnitude <= movementDistance) {
 			if(groundController.IsOverGround(destination)) {
 				// Move directly to the destination.

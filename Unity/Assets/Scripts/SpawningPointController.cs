@@ -8,13 +8,13 @@ public class SpawningPointController : MonoBehaviour {
 	
 	public Transform enemyPrefab;
 	public string spawnName;
-	public string proclimation;
+	public string proclamation;
 	
 	public Transform Spawn() {
 		Transform t = Instantiate(enemyPrefab, transform.position, Quaternion.identity) as Transform;
 		t.GetComponent<Health>().name = spawnName;
-		if(proclimation != ""){
-			GameManager.Instance.proclaimer.Proclaim(proclimation, 3);	
+		if(proclamation != "") {
+			GameManager.Instance.proclaimer.Proclaim(proclamation, 3f);
 		}
 		return t;
 	}
