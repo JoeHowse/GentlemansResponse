@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour {
 	public bool queuedpunch = false;
 	public Sprite sprite;
 	
+	public AudioManager audioManager;
+	
 	void Start(){
 		sprite = GetComponent<Sprite>();	
 	}
