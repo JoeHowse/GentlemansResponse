@@ -268,7 +268,7 @@ public class KingController : MonoBehaviour {
 			Cancel();
 			
 			// add sound effect
-			audioManager.playSFX("hit");
+			audioManager.playSFX("run");
 			StartCoroutine(NoControl(0.2f));
 			StartCoroutine(KnockBack(-0.02f));
 			sprite.Play("stun");
