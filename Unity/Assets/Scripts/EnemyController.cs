@@ -186,6 +186,8 @@ public class EnemyController : MonoBehaviour {
 		StartCoroutine(NoControl(3));
 		sprite.Play("fall");
 		StartCoroutine(KnockBack(3f, 0.6f));
+		
+		audioManager.playSFX("landing");
 		yield return new WaitForSeconds(0.5f);
 		sprite.Play("down");
 		yield return null;
@@ -196,7 +198,6 @@ public class EnemyController : MonoBehaviour {
 		yield return new WaitForSeconds(1f);
 			
 			// add sound effect
-			audioManager.playSFX("explode");
 			
 		Instantiate(gibs,transform.position,Quaternion.identity);
 		Destroy(gameObject);
@@ -230,7 +231,7 @@ public class EnemyController : MonoBehaviour {
 			Cancel();
 			
 			// add sound effect
-			audioManager.playSFX("hit");
+			audioManager.playSFX("run");
 			
 			StartCoroutine(NoControl(0.3f));
 			StartCoroutine(KnockBack(-0.02f));

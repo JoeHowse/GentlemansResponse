@@ -169,7 +169,7 @@ public class PlayerController : MonoBehaviour {
 			bool dead = GetComponent<Health>().TakeDamage(1);
 			if(!dead){
 			// add sound effect
-			audioManager.playSFX("hit");
+				audioManager.playSFX("hit");
 				StartCoroutine(NoControl(0.5f));
 				StartCoroutine(KnockBack(0.3f));
 				sprite.Play("stun");
