@@ -7,9 +7,16 @@ public class SpawningPointController : MonoBehaviour {
 	public static List<SpawningPointController> Instances { get { return instances; } }
 	
 	public Transform enemyPrefab;
+	public string spawnName;
+	public string proclimation;
 	
 	public Transform Spawn() {
-		return (Transform)Instantiate(enemyPrefab, transform.position, Quaternion.identity);
+		Transform t = Instantiate(enemyPrefab, transform.position, Quaternion.identity) as Transform;
+		t.GetComponent<Health>().name = spawnName;
+		if(proclimation != ""){
+			GameManager.Instance.proclaimer.Proclaim(proclimation, 3);	
+		}
+		return t;
 	}
 	
 	void Awake() {

@@ -10,6 +10,11 @@ public class PlayerController : MonoBehaviour {
 	public float comboTimer = 0;
 	public List<string> comboNames = new List<string>();
 	public bool queuedpunch = false;
+	public Sprite sprite;
+	
+	void Start(){
+		sprite = GetComponent<Sprite>();	
+	}
 	
 	void Update () {
 		if(comboTimer <= 0){
@@ -30,6 +35,12 @@ public class PlayerController : MonoBehaviour {
 			}
 			else{
 				GetComponent<Sprite>().Play("walk");
+				if(moveDir.x < 0){
+					GetComponent<Sprite>().SetDirection(false);
+				}
+				else if(moveDir.x > 0){
+					GetComponent<Sprite>().SetDirection(true);
+				}
 			}
 			TryPunch();
 		}
@@ -61,20 +72,38 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 	
-	IEnumerator NoControl(){
+	IEnumerator NoControl(float time = 0.4f){
 		noControl = true;
-		yield return new WaitForSeconds(0.4f);
+		yield return new WaitForSeconds(time);
 		noControl = false;
 	}
 	IEnumerator SlideHit(){
 		yield return new WaitForSeconds(0.2f);
-		float speed = 2f;
+		float speed = GetComponent<Sprite>().FacingRight? 2f: -2f;
 		float startTime = Time.time;
 		while(Time.time - startTime < 0.3f){
 			float u = 1 - (Time.time - startTime) / 0.3f;	
 			speed = u*speed;
 			transform.position += Vector3.right * speed * Time.deltaTime;
 			yield return null;
+		}
+	}
+	IEnumerator KnockBack(float s){
+		float speed = GetComponent<Sprite>().FacingRight? -s: s;
+		float startTime = Time.time;
+		while(Time.time - startTime < 0.3f){
+			float u = 1 - (Time.time - startTime) / 0.3f;	
+			speed = u*speed;
+			transform.position += Vector3.right * speed * Time.deltaTime;
+			yield return null;
+		}
+	}
+	public void Collision(object c){
+		CollisionInstance ci = c as CollisionInstance;
+		if(ci.action == "attack"){
+			StartCoroutine(NoControl(0.5f));
+			StartCoroutine(KnockBack(0.3f));
+			sprite.Play("stun");
 		}
 	}
 }

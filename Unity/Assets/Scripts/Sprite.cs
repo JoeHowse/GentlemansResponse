@@ -8,19 +8,35 @@ public class Sprite : MonoBehaviour {
 	public string lastPlayedAnim;
 	public List<FrameAnimation> frameAnimations;
 	public Renderer spriteRenderer;
-	public CollisionManager collisionManager;
-	private bool playing;
+	private bool playing, facingRight;
 	public bool IsPlaying{
 		get { return playing; }	
+	}
+	public bool FacingRight{
+		get { return facingRight;}	
 	}
 	public void Start(){
 		Play("idle");	
 	}
 	public void Update(){
 		foreach(CollisionBox cb in curFrame.hitBoxes){
-			collisionManager.Add(this, cb);
-		}	
+			GameManager.Instance.collisionManager.Add(this, cb);
+		}
+		Vector3 pos = transform.position;
+		pos.z = pos.y;
+		transform.position = pos;
 	}
+	
+	public void SetDirection(bool right){
+		if(right){
+			spriteRenderer.transform.localRotation = Quaternion.LookRotation(-Vector3.up,-Vector3.forward);
+		}
+		else{
+			spriteRenderer.transform.localRotation = Quaternion.LookRotation(-Vector3.up,Vector3.forward);
+		}
+		facingRight = right;
+	}
+	
 	public void Play(string anim){
 		if(playing){
 			if(lastPlayedAnim == anim)

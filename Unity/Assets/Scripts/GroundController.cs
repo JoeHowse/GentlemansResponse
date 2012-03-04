@@ -8,8 +8,8 @@ public class GroundController : MonoBehaviour {
 	public bool IsOverGround(Vector2 position) {
 		Vector2 origin = new Vector2(transform.position.x, transform.position.y);
 		foreach(Rect rect in rects) {
-			Vector2 halfRectDimensions = new Vector2(rect.width * 0.5f, rect.height * 0.5f);
-			if(rect.Contains(origin + position + halfRectDimensions)) {
+			
+			if(rect.Contains(origin + position)) {
 				return true;
 			}
 		}
@@ -25,11 +25,10 @@ public class GroundController : MonoBehaviour {
 		// Draw the edges of the rects.
 		Vector3 origin = transform.position;
 		foreach(Rect rect in rects) {
-			Vector3 halfRectDimensions = new Vector3(rect.width * 0.5f, rect.height * 0.5f, 0f);
-			Vector3 ul = origin + new Vector3(rect.xMin, rect.yMax, 0f) - halfRectDimensions;
-			Vector3 ur = origin + new Vector3(rect.xMax, rect.yMax, 0f) - halfRectDimensions;
-			Vector3 lr = origin + new Vector3(rect.xMax, rect.yMin, 0f) - halfRectDimensions;
-			Vector3 ll = origin + new Vector3(rect.xMin, rect.yMin, 0f) - halfRectDimensions;
+			Vector3 ul = origin + new Vector3(rect.xMin, rect.yMax, 0f);
+			Vector3 ur = origin + new Vector3(rect.xMax, rect.yMax, 0f);
+			Vector3 lr = origin + new Vector3(rect.xMax, rect.yMin, 0f);
+			Vector3 ll = origin + new Vector3(rect.xMin, rect.yMin, 0f);
 			Gizmos.DrawLine(ul, ur);
 			Gizmos.DrawLine(ur, lr);
 			Gizmos.DrawLine(lr, ll);

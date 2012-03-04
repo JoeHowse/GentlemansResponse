@@ -14,7 +14,7 @@ public class CameraController : MonoBehaviour {
 		playerLastX = player.position.x;
 	}
 	
-	void Update() {
+	void LateUpdate() {
 		if(stuck) {
 			if(EnemyController.NumInstances > 0) {
 				return;
@@ -29,7 +29,11 @@ public class CameraController : MonoBehaviour {
 		if(player.position.x - transform.position.x >= xDistancePanning) {
 			// The player is in the camera's right-hand panning margin.
 			// Pan the camera in step with the player.
-			transform.position += new Vector3(player.position.x - playerLastX, 0f, 0f);
+			float diff = (player.position.x - transform.position.x) - xDistancePanning;
+			if(diff > Time.deltaTime * 2f){
+				diff = Time.deltaTime * 2f;	
+			}
+			transform.position += Vector3.right *diff;
 		}
 		
 		foreach(StickingPointController stickingPointController in StickingPointController.Instances) {
